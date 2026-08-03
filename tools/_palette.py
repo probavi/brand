@@ -14,7 +14,7 @@ COLORS = {
     "green":        {"hex": "#0E9F6E", "rgb": [14, 159, 110],   "role": "The check, success, 'proven'. Accent only."},
     "mint":         {"hex": "#4ADE9D", "rgb": [74, 222, 157],   "role": "The check on dark surfaces; success text in dark UI."},
     "paper":        {"hex": "#F5F0E8", "rgb": [245, 240, 232],  "role": "Light background; light elements on Ink."},
-    "border-sand":  {"hex": "#D8D2C4", "rgb": [216, 210, 196],  "role": "Hairlines on Paper."},
+    "border-sand":  {"hex": "#8E8A81", "rgb": [142, 138, 129],  "role": "Hairlines on Paper."},
     "border-slate": {"hex": "#6E7CA6", "rgb": [110, 124, 166],  "role": "Hairlines on Ink."},
 }
 
@@ -26,8 +26,11 @@ BORDER_SAND  = COLORS["border-sand"]["hex"]
 BORDER_SLATE = COLORS["border-slate"]["hex"]
 
 # Plain white, for the reversed marks that sit on photography or a third
-# party's dark background. Deliberately outside COLORS: it is a printing
-# instruction, not a brand colour, and it must never reach tokens.json.
+# party's dark background, where one flat colour is all the surface allows.
+# On Ink the brand's own dark surface, the mint variants (Paper + Mint) carry
+# the mark instead, as the guide requires. Deliberately outside COLORS: white
+# is a printing instruction, not a brand colour, and must never reach
+# tokens.json.
 WHITE = "#FFFFFF"
 
 

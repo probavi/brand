@@ -1,6 +1,6 @@
 # Probavi brand guide
 
-Version 1.2 · 2026-08-03
+Version 1.3 · 2026-08-03
 
 Probavi is Latin for **"I have proven."** Everything in this identity serves that sentence: the mark is a seal, not a mascot; the palette says trust, not hype; the checkmark is a certificate, not a to-do item.
 
@@ -21,11 +21,15 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 |---|---|
 | `icon.svg` / `icon-*.png` | Default icon on light backgrounds |
 | `icon-mono.svg` | Single-color contexts: print, engraving, embossing, fax-grade reproduction |
-| `icon-white.svg` | On Ink navy or photographic dark backgrounds |
+| `icon-mint.svg` | On Ink: Paper ring, Mint check |
+| `icon-white.svg` | Flat white reverse, where the surface allows one color only: photography, a third party's dark background |
 | `icon-tile.svg` | App icon / avatar: Ink rounded square, Paper ring, Mint check |
 | `logo.svg` | Default lockup (icon + wordmark) on light backgrounds |
 | `logo-mono.svg` | Single-color lockup |
-| `logo-white.svg` | Lockup on dark backgrounds |
+| `logo-mint.svg` | Lockup on Ink: Paper wordmark and ring, Mint check |
+| `logo-white.svg` | Flat white reverse lockup, on photography or a third party's dark background |
+
+**On Ink, reach for the mint variants.** They keep the two voices the color rules ask for — Paper draws the structure, Mint carries the proof. The white marks are a concession to surfaces that grant a single color, not the house treatment for a dark background: on the brand's own Ink they flatten the check into the ring and the proof stops reading as proof.
 
 **Choosing icon vs. lockup:** use the full lockup wherever the audience may not know the product (website header, docs, presentations, README top). Use the icon alone only where the name is nearby or the context is established (favicon, app icon, social avatar, CLI, repeated UI elements).
 
@@ -43,10 +47,10 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 | Evidence green | `#0E9F6E` | 14 159 110 | The check, success states, "proven". Accent only — never large surfaces. |
 | Mint | `#4ADE9D` | 74 222 157 | The check on dark surfaces (Ink backgrounds), success text in dark UI. |
 | Paper | `#F5F0E8` | 245 240 232 | Light background, light elements on Ink. |
-| Border sand | `#D8D2C4` | 216 210 196 | Hairlines on Paper (badge borders, dividers). |
+| Border sand | `#8E8A81` | 142 138 129 | Hairlines on Paper (badge borders, dividers). |
 | Border slate | `#6E7CA6` | 110 124 166 | Hairlines on Ink (dark-surface dividers, card edges, table rules). |
 
-Border slate is Ink's own hue, desaturated and lightened — the cool mirror of how Border sand is drawn out of Paper. It measures **3.43:1 against Ink**, clearing the 3:1 floor for non-text that carries structure. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there.
+Both hairlines are their background's own hue, pushed until it separates: Border slate is Ink desaturated and lightened, Border sand is Paper darkened. Both are measured, and both clear the 3:1 floor for non-text that carries structure — **Border sand 3.03:1 against Paper, Border slate 3.43:1 against Ink**. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there, and that holds in daylight as much as in the dark. The floor is not left to prose — `tools/gen_tokens.py` measures every theme's hairline on each run and refuses to emit tokens that fall below it.
 
 Rules: one accent, used sparingly — the check carries the green; UI should not compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are Border slate, never Ink itself and never the accent. Red is reserved exclusively for failed-verification states in the product and never appears in brand assets.
 
@@ -69,7 +73,7 @@ Rules: one accent, used sparingly — the check carries the green; UI should not
 ## 5. Editing the assets
 
 - **Masters are the SVGs** (`svg/`), hand-editable text: geometry lives in a handful of `stroke-dasharray`, `path`, and `text` attributes. PNGs are exports — never edit them directly; re-export instead.
-- The lockup ships in two forms. The **live-text masters** (`logo.svg`, `logo-mono.svg`, `logo-white.svg`) use `<text>` with font-family Inter — these are the editable source. The **outlined distribution copies** (`logo-outlined.svg`, `logo-mono-outlined.svg`, `logo-white-outlined.svg`) have the wordmark converted to vector paths, so they render pixel-identically everywhere, with or without Inter installed. **Rule: send outlined copies to third parties (printers, partners, press kits); edit only the live-text masters, then regenerate the outlined copies** (`tools/gen_outlined.py`).
+- The lockup ships in two forms. The **live-text masters** (`logo.svg`, `logo-mono.svg`, `logo-mint.svg`, `logo-white.svg`) use `<text>` with font-family Inter — these are the editable source. The **outlined distribution copies** (`logo-outlined.svg`, `logo-mono-outlined.svg`, `logo-mint-outlined.svg`, `logo-white-outlined.svg`) have the wordmark converted to vector paths, so they render pixel-identically everywhere, with or without Inter installed. **Rule: send outlined copies to third parties (printers, partners, press kits); edit only the live-text masters, then regenerate the outlined copies** (`tools/gen_outlined.py`).
 - Everything regenerates from one script (`tools/gen_brand.py` in this package): colors, geometry, and layout are defined once; change a constant, rerun, and every size and variant stays consistent.
 - Design tokens (`tokens/tokens.json`, `tokens/tokens.css`) are generated from the same source by `tools/gen_tokens.py` — consume these in the website and dashboard rather than hardcoding hex values.
 - Standard exports included: icon PNGs at 16–1024 px, lockup at heights 64/128/256, `favicon.ico` (16+32+48), badges at 1×/2× and heights 32/48/64.

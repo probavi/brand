@@ -31,22 +31,28 @@ GEOMETRY = {
     "min_size_px": {"icon": 16, "lockup_height": 24},
 }
 
-# A border that resolves to its own background is invisible — that was the bug.
-# Guard against it, and print the measured hairline contrast on every run: the
-# brand argues numbers, so the palette states its own. (WCAG 1.4.11 asks 3:1 of
-# non-text that carries structure; Border slate clears it, Border sand predates
-# the rule and is left alone here.)
+# Hairlines carry structure, so WCAG 1.4.11 asks 3:1 of them — and the guide
+# says so in prose. Enforce it here instead: a rule a generator checks cannot
+# drift out of one theme while the other keeps it. Both past defects fail this
+# floor — the dark hairline that resolved to its own background (1.00:1), and
+# the light one left at 1.33:1 when the dark side was fixed. Print every
+# measurement on each run: the brand argues numbers, so the palette states its
+# own.
+HAIRLINE_MIN = 3.0
+
 def check_semantics():
     for theme, roles in SEMANTIC.items():
         for role, name in roles.items():
             if name not in COLORS:
                 raise SystemExit(f"{theme}/{role}: unknown colour '{name}'")
-        if roles["border"] == roles["bg"]:
-            raise SystemExit(
-                f"{theme}: border '{roles['border']}' is the background — invisible"
-            )
         ratio = contrast(roles["border"], roles["bg"])
         print(f"  {theme:5s} hairline {roles['border']:12s} on {roles['bg']:5s} = {ratio:.2f}:1")
+        if ratio < HAIRLINE_MIN:
+            raise SystemExit(
+                f"{theme}: hairline '{roles['border']}' on '{roles['bg']}' is "
+                f"{ratio:.2f}:1, below the {HAIRLINE_MIN:g}:1 floor — a divider "
+                f"that cannot be seen is a divider that is not there"
+            )
 
 def semantic_block(theme, indent):
     pad = " " * indent

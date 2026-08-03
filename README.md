@@ -11,7 +11,7 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 | Path | What it is |
 |---|---|
 | `BRAND_GUIDE.md` | The design manual. Read before using anything here. |
-| `svg/icon/` | Seal icon: default, mono, white, and app tile. Editable masters. |
+| `svg/icon/` | Seal icon: default, mono, mint (on Ink), white reverse, and app tile. Editable masters. |
 | `svg/logo/` | Lockup (icon + wordmark). Live-text masters **and** outlined distribution copies. |
 | `svg/badge/` | README shield and the "Proven by Probavi" web badge, light and dark. |
 | `png/` | Exports: icon 16–1024 px, lockup at heights 64/128/256, badges at 1×/2× and 32/48/64. |
@@ -21,7 +21,7 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 
 ## Which file do I need?
 
-- **Website header, docs, slides, README top** → `svg/logo/logo.svg` (dark backgrounds: `logo-white.svg`)
+- **Website header, docs, slides, README top** → `svg/logo/logo.svg` (on Ink: `logo-mint.svg`; on photography or someone else's dark background: `logo-white.svg`)
 - **Favicon, avatar, app icon** → `favicon.ico`, `svg/icon/icon-tile.svg`
 - **Sending to a printer, partner, or press** → the `*-outlined.svg` lockups (wordmark converted to paths; renders identically without Inter installed)
 - **Styling a site or dashboard** → `tokens/tokens.css`, or `tokens.json` if your build wants structured data
@@ -35,7 +35,7 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 .button { background: var(--probavi-accent); color: var(--probavi-paper); }
 ```
 
-Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires.
+Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires. Both hairline pairings are measured at generation time and clear the 3:1 contrast floor — 3.03:1 and 3.43:1 — so a border taken from these tokens stays visible in either theme.
 
 ## Regenerating
 
@@ -58,7 +58,7 @@ Inter is looked up in the usual font directories (`~/.fonts`, `~/.local/share/fo
 INTER_DIR=~/Downloads/Inter-4.1/extras/ttf python3 tools/gen_brand.py
 ```
 
-Reproducibility is verified, not assumed: with the pinned toolchain and Inter 4.1, rerunning all three generators reproduces every committed artifact — 43 files across `png/`, `svg/`, `favicon.ico` and `tokens/` — byte for byte.
+Reproducibility is verified, not assumed: with the pinned toolchain and Inter 4.1, rerunning all three generators reproduces every committed artifact — 49 files across `png/`, `svg/`, `favicon.ico` and `tokens/` — byte for byte.
 
 **Never edit files under `png/` or `tokens/` by hand** — they are generated. Change the source in `tools/` (or the SVG masters) and rerun.
 
