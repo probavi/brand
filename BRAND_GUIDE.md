@@ -1,6 +1,6 @@
 # Probavi brand guide
 
-Version 1.1 · 2026-08-03
+Version 1.2 · 2026-08-03
 
 Probavi is Latin for **"I have proven."** Everything in this identity serves that sentence: the mark is a seal, not a mascot; the palette says trust, not hype; the checkmark is a certificate, not a to-do item.
 
@@ -13,6 +13,7 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 - **The dashed ring** is not decoration — the segments represent the hash chain, the linked sequence of evidence records. Keep the dash rhythm exactly as drawn; never replace it with a solid circle.
 - **The check** rises past the ring's midline, ending high — proof with momentum, not a passive tick.
 - **The wordmark** sets the product name in Inter Medium, lowercase, with the letter "v" replaced by the brand check in Evidence green. The name shows what it says. Never typeset "probavi" with a plain "v" in logo contexts; in running text, ordinary spelling ("Probavi") is correct.
+- **The check-v beyond the lockup.** The wordmark's spelling is also permitted in **featured display** — a hero headline, a footer signature, a section or slide title — where the name is the subject of the view rather than a word inside a sentence. Keep it rare: a few anchor points per site, not every mention. Set the check in Evidence green (Mint on Ink), on the same baseline and at the same weight as the surrounding letters, and leave the underlying text as the plain string "probavi" so it copies, searches, and is read aloud correctly — the check is styling, not a glyph swap or an image. Where the name is inflected, joined to other words, or set in body copy, captions, or legal text, ordinary spelling stands.
 
 ### Variants and when to use them
 
