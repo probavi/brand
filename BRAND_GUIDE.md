@@ -1,6 +1,6 @@
 # Probavi brand guide
 
-Version 1.0 · 2026-07-30
+Version 1.1 · 2026-08-03
 
 Probavi is Latin for **"I have proven."** Everything in this identity serves that sentence: the mark is a seal, not a mascot; the palette says trust, not hype; the checkmark is a certificate, not a to-do item.
 
@@ -43,8 +43,11 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 | Mint | `#4ADE9D` | 74 222 157 | The check on dark surfaces (Ink backgrounds), success text in dark UI. |
 | Paper | `#F5F0E8` | 245 240 232 | Light background, light elements on Ink. |
 | Border sand | `#D8D2C4` | 216 210 196 | Hairlines on Paper (badge borders, dividers). |
+| Border slate | `#6E7CA6` | 110 124 166 | Hairlines on Ink (dark-surface dividers, card edges, table rules). |
 
-Rules: one accent, used sparingly — the check carries the green; UI should not compete with it. On Ink, always pair Paper (structure) with Mint (proof). Red is reserved exclusively for failed-verification states in the product and never appears in brand assets.
+Border slate is Ink's own hue, desaturated and lightened — the cool mirror of how Border sand is drawn out of Paper. It measures **3.43:1 against Ink**, clearing the 3:1 floor for non-text that carries structure. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there.
+
+Rules: one accent, used sparingly — the check carries the green; UI should not compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are Border slate, never Ink itself and never the accent. Red is reserved exclusively for failed-verification states in the product and never appears in brand assets.
 
 ## 3. Typography
 

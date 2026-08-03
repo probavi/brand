@@ -35,7 +35,7 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 .button { background: var(--probavi-accent); color: var(--probavi-paper); }
 ```
 
-Light/dark switching is built in via `prefers-color-scheme`; `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, as the guide requires.
+Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires.
 
 ## Regenerating
 
