@@ -5,11 +5,19 @@ import json, os
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
 COLORS = {
-    "ink":         {"hex": "#1E2A4A", "rgb": [30, 42, 74],    "role": "Primary. Text, ring, dark surfaces."},
-    "green":       {"hex": "#0E9F6E", "rgb": [14, 159, 110],  "role": "The check, success, 'proven'. Accent only."},
-    "mint":        {"hex": "#4ADE9D", "rgb": [74, 222, 157],  "role": "The check on dark surfaces; success text in dark UI."},
-    "paper":       {"hex": "#F5F0E8", "rgb": [245, 240, 232], "role": "Light background; light elements on Ink."},
-    "border-sand": {"hex": "#D8D2C4", "rgb": [216, 210, 196], "role": "Hairlines on Paper."},
+    "ink":          {"hex": "#1E2A4A", "rgb": [30, 42, 74],     "role": "Primary. Text, ring, dark surfaces."},
+    "green":        {"hex": "#0E9F6E", "rgb": [14, 159, 110],   "role": "The check, success, 'proven'. Accent only."},
+    "mint":         {"hex": "#4ADE9D", "rgb": [74, 222, 157],   "role": "The check on dark surfaces; success text in dark UI."},
+    "paper":        {"hex": "#F5F0E8", "rgb": [245, 240, 232],  "role": "Light background; light elements on Ink."},
+    "border-sand":  {"hex": "#D8D2C4", "rgb": [216, 210, 196],  "role": "Hairlines on Paper."},
+    "border-slate": {"hex": "#6E7CA6", "rgb": [110, 124, 166],  "role": "Hairlines on Ink."},
+}
+
+# Semantic roles per theme, as references into COLORS. Declared once; the CSS
+# emits it three times (media query + both data-theme overrides).
+SEMANTIC = {
+    "light": {"bg": "paper", "fg": "ink",    "accent": "green", "border": "border-sand"},
+    "dark":  {"bg": "ink",   "fg": "paper",  "accent": "mint",  "border": "border-slate"},
 }
 
 TYPOGRAPHY = {
@@ -30,6 +38,43 @@ GEOMETRY = {
     "clearspace": "3 × ring stroke width on all sides",
     "min_size_px": {"icon": 16, "lockup_height": 24},
 }
+
+def _luminance(name):
+    """WCAG 2.1 relative luminance of a palette entry."""
+    def lin(c):
+        c /= 255.0
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = COLORS[name]["rgb"]
+    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+
+def contrast(a, b):
+    """WCAG 2.1 contrast ratio between two palette entries."""
+    la, lb = _luminance(a), _luminance(b)
+    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+# A border that resolves to its own background is invisible — that was the bug.
+# Guard against it, and print the measured hairline contrast on every run: the
+# brand argues numbers, so the palette states its own. (WCAG 1.4.11 asks 3:1 of
+# non-text that carries structure; Border slate clears it, Border sand predates
+# the rule and is left alone here.)
+def check_semantics():
+    for theme, roles in SEMANTIC.items():
+        for role, name in roles.items():
+            if name not in COLORS:
+                raise SystemExit(f"{theme}/{role}: unknown colour '{name}'")
+        if roles["border"] == roles["bg"]:
+            raise SystemExit(
+                f"{theme}: border '{roles['border']}' is the background — invisible"
+            )
+        ratio = contrast(roles["border"], roles["bg"])
+        print(f"  {theme:5s} hairline {roles['border']:12s} on {roles['bg']:5s} = {ratio:.2f}:1")
+
+def semantic_block(theme, indent):
+    pad = " " * indent
+    return [f"{pad}/* semantic ({theme}) */"] + [
+        f"{pad}--probavi-{role}: var(--probavi-{name});"
+        for role, name in SEMANTIC[theme].items()
+    ]
 
 def main():
     tokens = {
@@ -53,22 +98,35 @@ def main():
         f"  --probavi-font-sans: {TYPOGRAPHY['family']['sans']};",
         f"  --probavi-font-mono: {TYPOGRAPHY['family']['mono']};",
         "",
-        "  /* semantic (light) */",
-        "  --probavi-bg: var(--probavi-paper);",
-        "  --probavi-fg: var(--probavi-ink);",
-        "  --probavi-accent: var(--probavi-green);",
-        "  --probavi-border: var(--probavi-border-sand);",
+    ]
+    lines += semantic_block("light", 2)
+    lines += [
         "}",
         "",
+        "/* Automatic: follow the OS preference when the page states no preference. */",
         "@media (prefers-color-scheme: dark) {",
         "  :root {",
-        "    --probavi-bg: var(--probavi-ink);",
-        "    --probavi-fg: var(--probavi-paper);",
-        "    --probavi-accent: var(--probavi-mint);",
-        "    --probavi-border: var(--probavi-ink);",
+    ]
+    lines += semantic_block("dark", 4)
+    lines += [
         "  }",
         "}",
+        "",
+        "/* Manual: an explicit theme on <html> wins over the OS preference, in both",
+        "   directions (Starlight and friends set data-theme from their toggle).",
+        "   Placed after the media query so source order says so too, not only",
+        "   selector specificity. */",
+        ':root[data-theme="dark"] {',
     ]
+    lines += semantic_block("dark", 2)
+    lines += [
+        "}",
+        "",
+        ':root[data-theme="light"] {',
+    ]
+    lines += semantic_block("light", 2)
+    lines += ["}"]
+
     with open(f"{ROOT}/tokens/tokens.css", "w") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -76,4 +134,5 @@ def main():
 
 if __name__ == "__main__":
     os.makedirs(f"{ROOT}/tokens", exist_ok=True)
+    check_semantics()
     main()

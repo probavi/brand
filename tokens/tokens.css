@@ -5,6 +5,7 @@
   --probavi-mint: #4ADE9D;
   --probavi-paper: #F5F0E8;
   --probavi-border-sand: #D8D2C4;
+  --probavi-border-slate: #6E7CA6;
   --probavi-font-sans: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --probavi-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -15,11 +16,33 @@
   --probavi-border: var(--probavi-border-sand);
 }
 
+/* Automatic: follow the OS preference when the page states no preference. */
 @media (prefers-color-scheme: dark) {
   :root {
+    /* semantic (dark) */
     --probavi-bg: var(--probavi-ink);
     --probavi-fg: var(--probavi-paper);
     --probavi-accent: var(--probavi-mint);
-    --probavi-border: var(--probavi-ink);
+    --probavi-border: var(--probavi-border-slate);
   }
+}
+
+/* Manual: an explicit theme on <html> wins over the OS preference, in both
+   directions (Starlight and friends set data-theme from their toggle).
+   Placed after the media query so source order says so too, not only
+   selector specificity. */
+:root[data-theme="dark"] {
+  /* semantic (dark) */
+  --probavi-bg: var(--probavi-ink);
+  --probavi-fg: var(--probavi-paper);
+  --probavi-accent: var(--probavi-mint);
+  --probavi-border: var(--probavi-border-slate);
+}
+
+:root[data-theme="light"] {
+  /* semantic (light) */
+  --probavi-bg: var(--probavi-paper);
+  --probavi-fg: var(--probavi-ink);
+  --probavi-accent: var(--probavi-green);
+  --probavi-border: var(--probavi-border-sand);
 }
