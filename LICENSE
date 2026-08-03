@@ -1,0 +1,53 @@
+Probavi brand assets — Terms of use
+
+Copyright (c) 2026 Probavi. All rights reserved.
+
+This repository is public so that the Probavi project, its documentation, and its
+users can reference the marks correctly. It is NOT open source, and no open source
+licence applies to its contents.
+
+The Apache License 2.0 (or any other licence) that covers Probavi software does NOT
+extend to the contents of this repository. Software licences grant rights to code,
+not to names, logos, or trade dress.
+
+WHAT IS RESERVED
+
+The name "Probavi", the Probavi wordmark, the seal icon (dashed ring enclosing a
+checkmark), the "Proven by Probavi" badge, and all files in this repository are
+proprietary marks of the Probavi project.
+
+PERMITTED WITHOUT ASKING
+
+1. Referring to Probavi by name in articles, talks, documentation, and comparisons.
+2. Displaying the unmodified logo to identify Probavi when writing or speaking about
+   the project, in accordance with BRAND_GUIDE.md (clearspace, minimum size, no
+   recolouring, no distortion).
+3. Using the "Proven by Probavi" badge on a status, trust, or documentation page —
+   ONLY where Probavi drills are actually configured, running, and passing. The badge
+   is a factual claim about your systems. Displaying it otherwise is misrepresentation.
+4. Contributors to Probavi using the marks in project-related materials.
+
+NOT PERMITTED
+
+1. Using the marks, or anything confusingly similar, as the name, logo, or branding
+   of your own product, service, company, domain, or software distribution.
+2. Modifying the marks: recolouring outside the documented palette, altering the
+   geometry, adding effects, or combining them with other marks.
+3. Using the marks in a way that suggests endorsement, affiliation, certification, or
+   partnership that does not exist.
+4. Selling merchandise or materials bearing the marks.
+5. Registering the marks, or confusingly similar marks, as trademarks or domains.
+
+FORKS AND DERIVATIVE SOFTWARE
+
+You may fork and redistribute Probavi software under its own licence, but you may not
+distribute it under the Probavi name or with Probavi branding. Remove or replace these
+assets in any redistributed or modified build. This is the standard practice that keeps
+"Probavi" meaningful: a user who sees the mark should know what they are getting.
+
+QUESTIONS
+
+For uses not covered here — press coverage, conference materials, partner pages —
+open an issue in this repository.
+
+These terms may be updated. Nothing here is legal advice.

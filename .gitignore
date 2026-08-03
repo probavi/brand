@@ -1,0 +1,9 @@
+.DS_Store
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+
+# Never commit font binaries — Inter is downloaded, not vendored
+*.ttf
+*.otf
