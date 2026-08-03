@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Generate outlined (path-based) wordmark lockups — pixel-identical without Inter installed."""
+import os
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
+from _fonts import inter
 
 INK = "#1E2A4A"; GREEN = "#0E9F6E"; WHITE = "#FFFFFF"
-ROOT = "/home/claude/probavi-brand"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 FS = 120
-font = TTFont("/root/.fonts/Inter-Medium.ttf")
+font = TTFont(inter("Medium"))
 upm = font["head"].unitsPerEm
 S = FS / upm
 glyphset = font.getGlyphSet()

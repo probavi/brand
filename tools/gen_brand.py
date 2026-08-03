@@ -2,10 +2,11 @@
 """Generate the complete Probavi brand package from one source geometry."""
 import os, math, cairosvg
 from PIL import Image, ImageDraw, ImageFont
+from _fonts import inter
 
 INK = "#1E2A4A"; GREEN = "#0E9F6E"; MINT = "#4ADE9D"; PAPER = "#F5F0E8"; WHITE = "#FFFFFF"
-ROOT = "/home/claude/probavi-brand"
-F_MED = "/root/.fonts/Inter-Medium.ttf"; F_REG = "/root/.fonts/Inter-Regular.ttf"
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+F_MED = inter("Medium"); F_REG = inter("Regular")
 for d in ["svg/icon","svg/logo","svg/badge","png/icon","png/logo","png/badge"]:
     os.makedirs(f"{ROOT}/{d}", exist_ok=True)
 
@@ -168,6 +169,7 @@ for h in [32,48,64]:
     render_web_badge("badge-web-light", PAPER, INK, INK, GREEN, "#D8D2C4", h)
     render_web_badge("badge-web-dark",  INK, PAPER, PAPER, MINT, INK, h)
 
-print("Kesz. Fajlok:")
-for root,_,files in os.walk(ROOT):
-    for f in sorted(files): print(os.path.join(root,f).replace(ROOT+"/",""))
+print("Done. Generated:")
+for d in ["svg/icon","svg/logo","svg/badge","png/icon","png/logo","png/badge"]:
+    for f in sorted(os.listdir(f"{ROOT}/{d}")): print(f"{d}/{f}")
+print("favicon.ico")

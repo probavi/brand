@@ -52,6 +52,14 @@ python3 tools/gen_tokens.py    # tokens.json + tokens.css
 
 Two prerequisites pip cannot supply: the **system cairo library** (`cairocffi` binds to it), and **[Inter](https://rsms.me/inter/)** (SIL Open Font License) as a TTF on disk, needed by `gen_brand.py` for PNG text and by `gen_outlined.py` for the wordmark outlines. `gen_tokens.py` needs neither — it is standard library only, so tokens regenerate anywhere.
 
+Inter is looked up in the usual font directories (`~/.fonts`, `~/.local/share/fonts`, the system ones) and via fontconfig. To use an unpacked release without installing it, point `INTER_DIR` at the directory holding `Inter-Medium.ttf` and `Inter-Regular.ttf`:
+
+```bash
+INTER_DIR=~/Downloads/Inter-4.1/extras/ttf python3 tools/gen_brand.py
+```
+
+Reproducibility is verified, not assumed: with the pinned toolchain and Inter 4.1, rerunning all three generators reproduces every committed artifact — 43 files across `png/`, `svg/`, `favicon.ico` and `tokens/` — byte for byte.
+
 **Never edit files under `png/` or `tokens/` by hand** — they are generated. Change the source in `tools/` (or the SVG masters) and rerun.
 
 ## Using this repo from other projects
