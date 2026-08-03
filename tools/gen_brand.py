@@ -19,9 +19,13 @@ def icon_svg(ring, check, tile=None):
   <path d="M 72 122 L 109 166 L 172 81" fill="none" stroke="{check}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>'''
 
+# On Ink the mark keeps its two voices: Paper draws the structure, Mint the
+# proof (guide §2). White-on-white is the reversed mark for surfaces that
+# grant only one colour — photography, a third party's dark background.
 icons = {
     "icon":      icon_svg(INK, GREEN),
     "icon-mono": icon_svg(INK, INK),
+    "icon-mint": icon_svg(PAPER, MINT),
     "icon-white":icon_svg(WHITE, WHITE),
     "icon-tile": icon_svg(PAPER, MINT, tile=INK),
 }
@@ -31,7 +35,7 @@ for name, svg in icons.items():
 for size in [16,32,48,64,128,256,512,1024]:
     cairosvg.svg2png(bytestring=icons["icon"].encode(), write_to=f"{ROOT}/png/icon/icon-{size}.png",
                      output_width=size, output_height=size)
-for name in ["icon-mono","icon-white","icon-tile"]:
+for name in ["icon-mono","icon-mint","icon-white","icon-tile"]:
     for size in [256,1024]:
         cairosvg.svg2png(bytestring=icons[name].encode(), write_to=f"{ROOT}/png/icon/{name}-{size}.png",
                          output_width=size, output_height=size)
@@ -70,7 +74,8 @@ def logo_svg(text_c, check_c):
   <text x="{X_I}" y="{BASE}" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="{FS}" fill="{text_c}">i</text>
 </svg>'''
 
-logos = {"logo": (INK, GREEN), "logo-mono": (INK, INK), "logo-white": (WHITE, WHITE)}
+logos = {"logo": (INK, GREEN), "logo-mono": (INK, INK),
+         "logo-mint": (PAPER, MINT), "logo-white": (WHITE, WHITE)}
 for name,(tc,cc) in logos.items():
     open(f"{ROOT}/svg/logo/{name}.svg","w").write(logo_svg(tc,cc))
 
@@ -95,6 +100,7 @@ def render_logo_png(path, text_c, check_c, height):
 
 for h in [64,128,256]: render_logo_png(f"{ROOT}/png/logo/logo-h{h}.png", INK, GREEN, h)
 render_logo_png(f"{ROOT}/png/logo/logo-mono-h128.png", INK, INK, 128)
+render_logo_png(f"{ROOT}/png/logo/logo-mint-h128.png", PAPER, MINT, 128)
 render_logo_png(f"{ROOT}/png/logo/logo-white-h128.png", WHITE, WHITE, 128)
 
 # ---------- BADGE 1: README shield (h=20) ----------

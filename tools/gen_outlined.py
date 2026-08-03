@@ -4,7 +4,7 @@ import os
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
 from _fonts import inter
-from _palette import INK, GREEN, WHITE
+from _palette import INK, GREEN, MINT, PAPER, WHITE
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 FS = 120
@@ -56,7 +56,8 @@ def outlined_svg(text_c, check_c):
     parts.append('</svg>')
     return "\n".join(parts)
 
-variants = {"logo-outlined": (INK, GREEN), "logo-mono-outlined": (INK, INK), "logo-white-outlined": (WHITE, WHITE)}
+variants = {"logo-outlined": (INK, GREEN), "logo-mono-outlined": (INK, INK),
+            "logo-mint-outlined": (PAPER, MINT), "logo-white-outlined": (WHITE, WHITE)}
 for name, (tc, cc) in variants.items():
     open(f"{ROOT}/svg/logo/{name}.svg", "w").write(outlined_svg(tc, cc))
     print(name, "OK  (canvas:", LOGO_W, "x", LOGO_H, ")")
