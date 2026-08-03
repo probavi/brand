@@ -42,13 +42,15 @@ Light/dark switching is built in, and answers to two signals. By default the tok
 Everything derives from one source of truth — colours and geometry are declared once in `tools/`, so a change propagates to every size and variant consistently.
 
 ```bash
-pip install cairosvg pillow fonttools
+pip install -r requirements.txt
 python3 tools/gen_brand.py     # icons, lockups, badges, PNG exports, favicon
 python3 tools/gen_outlined.py  # outlined distribution copies of the lockups
 python3 tools/gen_tokens.py    # tokens.json + tokens.css
 ```
 
-Requires [Inter](https://rsms.me/inter/) (SIL Open Font License) installed locally for the live-text masters and PNG rendering.
+`requirements.txt` pins the toolchain exactly, transitive dependencies included, because a rasteriser version is an input to the artifacts: the pinned set reproduces every text-free PNG export byte for byte. Bump it deliberately and re-check the exports when you do.
+
+Two prerequisites pip cannot supply: the **system cairo library** (`cairocffi` binds to it), and **[Inter](https://rsms.me/inter/)** (SIL Open Font License) as a TTF on disk, needed by `gen_brand.py` for PNG text and by `gen_outlined.py` for the wordmark outlines. `gen_tokens.py` needs neither — it is standard library only, so tokens regenerate anywhere.
 
 **Never edit files under `png/` or `tokens/` by hand** — they are generated. Change the source in `tools/` (or the SVG masters) and rerun.
 

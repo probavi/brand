@@ -1,0 +1,27 @@
+# Pinned build toolchain for the generators in tools/.
+#
+#   pip install -r requirements.txt
+#
+# Verified against the committed artifacts: this exact set reproduces all 14
+# text-free PNG exports (png/icon/*) byte for byte. Bump deliberately, and
+# re-check the exports when you do — a rasteriser change is an asset change.
+#
+# tools/gen_tokens.py needs nothing beyond the standard library.
+
+# Direct
+cairosvg==2.9.0       # gen_brand.py — SVG -> PNG rasterisation
+pillow==12.3.0        # gen_brand.py — compositing, text runs, favicon.ico
+fonttools==4.63.0     # gen_outlined.py — wordmark glyphs -> vector paths
+
+# Transitive, pinned so the whole tree resolves identically
+cairocffi==1.7.1
+cffi==2.1.0
+cssselect2==0.9.0
+defusedxml==0.7.1
+pycparser==3.0
+tinycss2==1.5.1
+webencodings==0.5.1
+
+# Not installable with pip, still required by gen_brand.py / gen_outlined.py:
+#   - the system cairo library (cairocffi binds to it, it is not vendored)
+#   - Inter (SIL OFL, https://rsms.me/inter/) as TTF on disk
