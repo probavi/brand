@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 """Generate machine-readable design tokens from the single source of truth."""
 import json, os
+from _palette import COLORS, contrast
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-
-COLORS = {
-    "ink":          {"hex": "#1E2A4A", "rgb": [30, 42, 74],     "role": "Primary. Text, ring, dark surfaces."},
-    "green":        {"hex": "#0E9F6E", "rgb": [14, 159, 110],   "role": "The check, success, 'proven'. Accent only."},
-    "mint":         {"hex": "#4ADE9D", "rgb": [74, 222, 157],   "role": "The check on dark surfaces; success text in dark UI."},
-    "paper":        {"hex": "#F5F0E8", "rgb": [245, 240, 232],  "role": "Light background; light elements on Ink."},
-    "border-sand":  {"hex": "#D8D2C4", "rgb": [216, 210, 196],  "role": "Hairlines on Paper."},
-    "border-slate": {"hex": "#6E7CA6", "rgb": [110, 124, 166],  "role": "Hairlines on Ink."},
-}
 
 # Semantic roles per theme, as references into COLORS. Declared once; the CSS
 # emits it three times (media query + both data-theme overrides).
@@ -38,19 +30,6 @@ GEOMETRY = {
     "clearspace": "3 × ring stroke width on all sides",
     "min_size_px": {"icon": 16, "lockup_height": 24},
 }
-
-def _luminance(name):
-    """WCAG 2.1 relative luminance of a palette entry."""
-    def lin(c):
-        c /= 255.0
-        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = COLORS[name]["rgb"]
-    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-
-def contrast(a, b):
-    """WCAG 2.1 contrast ratio between two palette entries."""
-    la, lb = _luminance(a), _luminance(b)
-    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 
 # A border that resolves to its own background is invisible — that was the bug.
 # Guard against it, and print the measured hairline contrast on every run: the
