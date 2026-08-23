@@ -11,7 +11,7 @@ properties in tokens.css.
 
 COLORS = {
     "ink":          {"hex": "#1E2A4A", "rgb": [30, 42, 74],     "role": "Primary. Text, ring, dark surfaces."},
-    "green":        {"hex": "#0E9F6E", "rgb": [14, 159, 110],   "role": "The check, success, 'proven'. Accent only."},
+    "green":        {"hex": "#0B7B55", "rgb": [11, 123, 85],    "role": "The check, success, 'proven'. Accent only."},
     "mint":         {"hex": "#4ADE9D", "rgb": [74, 222, 157],   "role": "The check on dark surfaces; success text in dark UI."},
     "fault-red":    {"hex": "#9F0E1A", "rgb": [159, 14, 26],    "role": "Failed verification on Paper."},
     "fault-rose":   {"hex": "#EE7781", "rgb": [238, 119, 129],  "role": "Failed verification on Ink."},
