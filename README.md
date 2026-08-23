@@ -33,9 +33,10 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 @import "tokens/tokens.css";
 
 .button { background: var(--probavi-accent); color: var(--probavi-paper); }
+.drill--failed { color: var(--probavi-fault); }
 ```
 
-Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires. Both hairline pairings are measured at generation time and clear the 3:1 contrast floor — 3.03:1 and 3.43:1 — so a border taken from these tokens stays visible in either theme.
+Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires. Both hairline pairings are measured at generation time and clear the 3:1 contrast floor — 3.03:1 and 3.43:1 — so a border taken from these tokens stays visible in either theme. `--probavi-fault` is the failed-verification color the product needs and the brand assets never use — Fault red on Paper, Fault rose on Ink, both above the 4.5:1 floor for text (7.25:1 and 5.11:1). Pair it with a glyph rather than relying on the color alone; the guide says why.
 
 ## Regenerating
 

@@ -8,8 +8,8 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 # Semantic roles per theme, as references into COLORS. Declared once; the CSS
 # emits it three times (media query + both data-theme overrides).
 SEMANTIC = {
-    "light": {"bg": "paper", "fg": "ink",    "accent": "green", "border": "border-sand"},
-    "dark":  {"bg": "ink",   "fg": "paper",  "accent": "mint",  "border": "border-slate"},
+    "light": {"bg": "paper", "fg": "ink",   "accent": "green", "border": "border-sand",  "fault": "fault-red"},
+    "dark":  {"bg": "ink",   "fg": "paper", "accent": "mint",  "border": "border-slate", "fault": "fault-rose"},
 }
 
 TYPOGRAPHY = {
@@ -31,27 +31,55 @@ GEOMETRY = {
     "min_size_px": {"icon": 16, "lockup_height": 24},
 }
 
-# Hairlines carry structure, so WCAG 1.4.11 asks 3:1 of them — and the guide
-# says so in prose. Enforce it here instead: a rule a generator checks cannot
-# drift out of one theme while the other keeps it. Both past defects fail this
-# floor — the dark hairline that resolved to its own background (1.00:1), and
-# the light one left at 1.33:1 when the dark side was fixed. Print every
-# measurement on each run: the brand argues numbers, so the palette states its
-# own.
-HAIRLINE_MIN = 3.0
+# Contrast floors per semantic role, measured against that theme's own
+# background. The numbers are WCAG 2.1's: 4.5:1 for anything read as text
+# (1.4.3), 3:1 for non-text that carries structure (1.4.11). The guide states
+# them in prose; they are enforced here, because a rule a generator checks
+# cannot drift out of one theme while the other keeps it. Both past defects
+# fail this table — the dark hairline that resolved to its own background
+# (1.00:1), and the light one left at 1.33:1 when the dark side was fixed. A
+# role absent from the table is still measured and printed, just not enforced:
+# putting a floor on the accent would move Evidence green itself, and that is a
+# brand decision, not this file's. Print every measurement on each run — the
+# brand argues numbers, so the palette states its own.
+FLOORS = {"fg": 4.5, "fault": 4.5, "border": 3.0}
+
+REASONS = {
+    "fg":     "text that cannot be read is text that is not there",
+    "fault":  "a failure that cannot be read is a failure that was never reported",
+    "border": "a divider that cannot be seen is a divider that is not there",
+}
+
+# Proven and failed must also stay apart from each other, not only from the
+# background. Colour never carries the state alone — the guide gives that job
+# to the glyph — but where both land in one list they must not collapse into a
+# single grey for the reader who cannot separate red from green, or for the
+# page that gets printed in black and white. A house floor, not a WCAG one.
+STATUS_MIN = 1.5
 
 def check_semantics():
     for theme, roles in SEMANTIC.items():
         for role, name in roles.items():
             if name not in COLORS:
                 raise SystemExit(f"{theme}/{role}: unknown colour '{name}'")
-        ratio = contrast(roles["border"], roles["bg"])
-        print(f"  {theme:5s} hairline {roles['border']:12s} on {roles['bg']:5s} = {ratio:.2f}:1")
-        if ratio < HAIRLINE_MIN:
+        for role, name in roles.items():
+            if role == "bg":
+                continue
+            ratio, floor = contrast(name, roles["bg"]), FLOORS.get(role)
+            note = f"floor {floor:g}" if floor else "not enforced"
+            print(f"  {theme:5s} {role:6s} {name:12s} on {roles['bg']:5s} = {ratio:5.2f}:1  ({note})")
+            if floor and ratio < floor:
+                raise SystemExit(
+                    f"{theme}: {role} '{name}' on '{roles['bg']}' is {ratio:.2f}:1, "
+                    f"below the {floor:g}:1 floor — {REASONS[role]}"
+                )
+        apart = contrast(roles["fault"], roles["accent"])
+        print(f"  {theme:5s} {'fault vs accent':29s}= {apart:5.2f}:1  (floor {STATUS_MIN:g})")
+        if apart < STATUS_MIN:
             raise SystemExit(
-                f"{theme}: hairline '{roles['border']}' on '{roles['bg']}' is "
-                f"{ratio:.2f}:1, below the {HAIRLINE_MIN:g}:1 floor — a divider "
-                f"that cannot be seen is a divider that is not there"
+                f"{theme}: fault '{roles['fault']}' and accent '{roles['accent']}' are "
+                f"only {apart:.2f}:1 apart, below the {STATUS_MIN:g}:1 floor — proven and "
+                f"failed would read as one colour in grayscale"
             )
 
 def semantic_block(theme, indent):
