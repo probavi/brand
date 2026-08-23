@@ -2,7 +2,7 @@
   <clipPath id="r"><rect width="158" height="20" rx="3"/></clipPath>
   <g clip-path="url(#r)">
     <rect width="68" height="20" fill="#1E2A4A"/>
-    <rect x="68" width="90" height="20" fill="#0E9F6E"/>
+    <rect x="68" width="90" height="20" fill="#0B7B55"/>
   </g>
   <g transform="translate(6,3.5) scale(0.05416666666666667)">
     <circle cx="120" cy="120" r="98" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-dasharray="26 15" stroke-linecap="round"/>

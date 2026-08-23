@@ -1,6 +1,6 @@
 # Probavi brand guide
 
-Version 1.4 · 2026-08-23
+Version 1.5 · 2026-08-23
 
 Probavi is Latin for **"I have proven."** Everything in this identity serves that sentence: the mark is a seal, not a mascot; the palette says trust, not hype; the checkmark is a certificate, not a to-do item.
 
@@ -44,7 +44,7 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 | Name | Hex | RGB | Role |
 |---|---|---|---|
 | Ink | `#1E2A4A` | 30 42 74 | Primary. Text, ring, dark surfaces. Trust and gravity. |
-| Evidence green | `#0E9F6E` | 14 159 110 | The check, success states, "proven". Accent only — never large surfaces. |
+| Evidence green | `#0B7B55` | 11 123 85 | The check, success states, "proven". Accent only — never large surfaces. |
 | Mint | `#4ADE9D` | 74 222 157 | The check on dark surfaces (Ink backgrounds), success text in dark UI. |
 | Fault red | `#9F0E1A` | 159 14 26 | Failed verification on Paper. Product UI only — never in a brand asset. |
 | Fault rose | `#EE7781` | 238 119 129 | Failed verification on Ink (dark UI). Product UI only. |
@@ -52,13 +52,15 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 | Border sand | `#8E8A81` | 142 138 129 | Hairlines on Paper (badge borders, dividers). |
 | Border slate | `#6E7CA6` | 110 124 166 | Hairlines on Ink (dark-surface dividers, card edges, table rules). |
 
-Both hairlines are their background's own hue, pushed until it separates: Border slate is Ink desaturated and lightened, Border sand is Paper darkened. Both are measured, and both clear the 3:1 floor for non-text that carries structure — **Border sand 3.03:1 against Paper, Border slate 3.43:1 against Ink**. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there, and that holds in daylight as much as in the dark. The floor is not left to prose — `tools/gen_tokens.py` measures every theme's hairline on each run and refuses to emit tokens that fall below it.
+**Evidence green is measured too.** It reads as text on Paper at **4.65:1**, and holds white text on top of itself at 5.28:1 — the shield badge's label sits on exactly that field. It did not always: the green shipped at 2.98:1, under even the 3:1 floor for non-text, which left the success state the one state in the palette nobody could reliably read. The fix was the color, not an exception for it — same hue, same saturation, value lowered until it cleared the floor. It cannot keep going darker either: below 1.5:1 from Fault red, proven and failed stop being two states in grayscale. The green now sits in the band those two floors leave open, and `tools/gen_tokens.py` holds it there. Mint, its counterpart on Ink, already cleared the floor at 8.23:1 and did not move.
+
+Both hairlines are their background's own hue, pushed until it separates: Border slate is Ink desaturated and lightened, Border sand is Paper darkened. Both are measured, and both clear the 3:1 floor for non-text that carries structure — **Border sand 3.03:1 against Paper, Border slate 3.43:1 against Ink**. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there, and that holds in daylight as much as in the dark. The floor is not left to prose — `tools/gen_tokens.py` measures it on each run, as it does every role in the table, and refuses to emit tokens that fall below.
 
 Rules: one accent, used sparingly — the check carries the green; UI should not compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are Border slate, never Ink itself and never the accent.
 
-**The fault pair.** Red is reserved exclusively for failed-verification states in the product, and never appears in a brand asset — no mark, badge, or export in this package contains it, and the generators are not even given a constant for it. It is declared here so the product does not have to invent one: `--probavi-fault` resolves to **Fault red, 7.25:1 against Paper**, and on dark surfaces to **Fault rose, 5.11:1 against Ink**. Both clear the 4.5:1 floor for text, because a failed drill is read, not merely noticed. Fault red carries Evidence green's own saturation and value, rotated to red; Mint's construction could not be mirrored the same way — red is the darkest hue on the wheel, and the naive mirror lands at 3.51:1 on Ink — so the dark counterpart is measured to the floor instead of derived.
+**The fault pair.** Red is reserved exclusively for failed-verification states in the product, and never appears in a brand asset — no mark, badge, or export in this package contains it, and the generators are not even given a constant for it. It is declared here so the product does not have to invent one: `--probavi-fault` resolves to **Fault red, 7.25:1 against Paper**, and on dark surfaces to **Fault rose, 5.11:1 against Ink**. Both clear the 4.5:1 floor for text, because a failed drill is read, not merely noticed. Fault red carries Evidence green's saturation, rotated to red and then measured like everything else here; Mint's construction could not be mirrored the same way — red is the darkest hue on the wheel, and the naive mirror lands at 3.51:1 on Ink — so the dark counterpart is measured to the floor instead of derived.
 
-**Never let color carry the state alone.** Proven and failed differ first by glyph — the brand check against a cross, drawn at the same stroke weight and with the same round caps — and only then by color. Around one man in twelve cannot separate red from green, and for that reader the glyph is the whole message. The two colors are held apart in lightness as well (2.43:1 in light, 1.61:1 on Ink) so a status list survives grayscale, and `tools/gen_tokens.py` enforces that separation alongside both 4.5:1 floors on every run.
+**Never let color carry the state alone.** Proven and failed differ first by glyph — the brand check against a cross, drawn at the same stroke weight and with the same round caps — and only then by color. Around one man in twelve cannot separate red from green, and for that reader the glyph is the whole message. The two colors are held apart in lightness as well (1.56:1 in light, 1.61:1 on Ink) so a status list survives grayscale, and `tools/gen_tokens.py` enforces that separation alongside both 4.5:1 floors on every run.
 
 ## 3. Typography
 

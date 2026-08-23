@@ -35,17 +35,19 @@ GEOMETRY = {
 # background. The numbers are WCAG 2.1's: 4.5:1 for anything read as text
 # (1.4.3), 3:1 for non-text that carries structure (1.4.11). The guide states
 # them in prose; they are enforced here, because a rule a generator checks
-# cannot drift out of one theme while the other keeps it. Both past defects
-# fail this table — the dark hairline that resolved to its own background
-# (1.00:1), and the light one left at 1.33:1 when the dark side was fixed. A
-# role absent from the table is still measured and printed, just not enforced:
-# putting a floor on the accent would move Evidence green itself, and that is a
-# brand decision, not this file's. Print every measurement on each run — the
-# brand argues numbers, so the palette states its own.
-FLOORS = {"fg": 4.5, "fault": 4.5, "border": 3.0}
+# cannot drift out of one theme while the other keeps it. Every defect this
+# package has had fails this table — the dark hairline that resolved to its own
+# background (1.00:1), the light one left at 1.33:1 when the dark side was
+# fixed, and Evidence green at 2.98:1 on Paper, unreadable as the success state
+# it names. Every role that paints on the background declares a floor; one
+# added without a number is a defect waiting to happen, so it stops the run.
+# Print every measurement — the brand argues numbers, so the palette states its
+# own.
+FLOORS = {"fg": 4.5, "accent": 4.5, "fault": 4.5, "border": 3.0}
 
 REASONS = {
     "fg":     "text that cannot be read is text that is not there",
+    "accent": "an accent that cannot be read is decoration, not a state",
     "fault":  "a failure that cannot be read is a failure that was never reported",
     "border": "a divider that cannot be seen is a divider that is not there",
 }
@@ -54,7 +56,9 @@ REASONS = {
 # background. Colour never carries the state alone — the guide gives that job
 # to the glyph — but where both land in one list they must not collapse into a
 # single grey for the reader who cannot separate red from green, or for the
-# page that gets printed in black and white. A house floor, not a WCAG one.
+# page that gets printed in black and white. A house floor, not a WCAG one —
+# and it cuts both ways: it is what stops the accent from being darkened past
+# the point where proven and failed meet.
 STATUS_MIN = 1.5
 
 def check_semantics():
@@ -65,10 +69,11 @@ def check_semantics():
         for role, name in roles.items():
             if role == "bg":
                 continue
-            ratio, floor = contrast(name, roles["bg"]), FLOORS.get(role)
-            note = f"floor {floor:g}" if floor else "not enforced"
-            print(f"  {theme:5s} {role:6s} {name:12s} on {roles['bg']:5s} = {ratio:5.2f}:1  ({note})")
-            if floor and ratio < floor:
+            if role not in FLOORS:
+                raise SystemExit(f"{theme}/{role}: no contrast floor declared for this role")
+            ratio, floor = contrast(name, roles["bg"]), FLOORS[role]
+            print(f"  {theme:5s} {role:6s} {name:12s} on {roles['bg']:5s} = {ratio:5.2f}:1  (floor {floor:g})")
+            if ratio < floor:
                 raise SystemExit(
                     f"{theme}: {role} '{name}' on '{roles['bg']}' is {ratio:.2f}:1, "
                     f"below the {floor:g}:1 floor — {REASONS[role]}"
