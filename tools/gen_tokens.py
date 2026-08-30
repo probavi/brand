@@ -96,8 +96,6 @@ def semantic_block(theme, indent):
 
 def main():
     tokens = {
-        "$schema": "https://probavi.dev/schemas/brand-tokens-1.json",
-        "version": 1,
         "color": COLORS,
         "typography": TYPOGRAPHY,
         "geometry": GEOMETRY,
