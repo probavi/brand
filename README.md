@@ -65,4 +65,10 @@ Reproducibility is verified, not assumed: with the pinned toolchain and Inter 4.
 
 ## Using this repo from other projects
 
-The website consumes it as a read-only git submodule; the core repo just references a couple of files directly. Either way: this repo is the source, edits happen here.
+**This repository is the source. Edits happen here, never in a consumer's copy.**
+
+There are no submodules. Every Probavi repository sits side by side in one workspace, so a person or an agent reads this one from the sibling directory — a fresh read is the default rather than a manual act.
+
+A build has no sibling: CI clones a single repository. So a consumer commits the files it actually uses — `tokens/tokens.css`, an icon, the favicon — with the brand commit they were taken from and a digest per file recorded beside them, and refreshes them with a script that runs first in every local check and build. The committed copy is transport to CI, not a pin: a token diff turning up in an unrelated pull request means the brand moved, which is the signal working.
+
+There is nothing to pin to in any case. `tokens.css` and `tokens.json` carry no version and nothing asserts one; the version in the guide's header is a document version, written for humans. Consumers import the tokens rather than restating them — a brand value copied into someone else's stylesheet as a literal is how a retired colour keeps shipping.
