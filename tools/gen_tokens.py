@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 """Generate machine-readable design tokens from the single source of truth."""
 import json, os
-from _palette import COLORS, contrast
+from _oklch import contrast, hex_to_oklch, hue_distance
+from _palette import COLORS, FAULT, FLOOR, THEMES, ACCENT, SECOND
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
-# Semantic roles per theme, as references into COLORS. Declared once; the CSS
-# emits it three times (media query + both data-theme overrides).
-SEMANTIC = {
-    "light": {"bg": "paper", "fg": "ink",   "accent": "green", "border": "border-sand",  "fault": "fault-red"},
-    "dark":  {"bg": "ink",   "fg": "paper", "accent": "mint",  "border": "border-slate", "fault": "fault-rose"},
-}
+# The semantic roles, in emission order. Every one of them is a surface, a text
+# tone, a line or a state — a consumer that reaches past these for a raw colour
+# is rebuilding the scale by hand, which is the drift this package exists to
+# stop. The scale is deliberately complete: the previous token set stopped at
+# five roles, and every consumer invented the missing ones by mixing the two
+# grounds together, which is what made the surfaces read as muddy.
+ROLES = [
+    "bg", "surface", "raised", "code-bg",
+    "fg", "muted", "subtle",
+    "line", "line-strong", "line-soft",
+    "accent", "accent-graphic", "accent-fill", "accent-fg", "accent-soft",
+    "second", "second-graphic", "second-fill", "second-fg", "second-soft",
+    "fault", "fault-soft",
+]
 
 TYPOGRAPHY = {
     "family": {
@@ -31,72 +40,108 @@ GEOMETRY = {
     "min_size_px": {"icon": 16, "lockup_height": 24},
 }
 
-# Contrast floors per semantic role, measured against that theme's own
-# background. The numbers are WCAG 2.1's: 4.5:1 for anything read as text
-# (1.4.3), 3:1 for non-text that carries structure (1.4.11). The guide states
-# them in prose; they are enforced here, because a rule a generator checks
-# cannot drift out of one theme while the other keeps it. Every defect this
-# package has had fails this table — the dark hairline that resolved to its own
-# background (1.00:1), the light one left at 1.33:1 when the dark side was
-# fixed, and Evidence green at 2.98:1 on Paper, unreadable as the success state
-# it names. Every role that paints on the background declares a floor; one
-# added without a number is a defect waiting to happen, so it stops the run.
-# Print every measurement — the brand argues numbers, so the palette states its
-# own.
-FLOORS = {"fg": 4.5, "accent": 4.5, "fault": 4.5, "border": 3.0}
-
+# Why each floor exists, printed with the failure so a broken run explains
+# itself rather than naming a number.
 REASONS = {
-    "fg":     "text that cannot be read is text that is not there",
+    "fg": "text that cannot be read is text that is not there",
+    "muted": "a secondary tone still has to be read, on every surface it can land on",
+    "subtle": "a tone too faint to see is decoration pretending to be information",
     "accent": "an accent that cannot be read is decoration, not a state",
-    "fault":  "a failure that cannot be read is a failure that was never reported",
-    "border": "a divider that cannot be seen is a divider that is not there",
+    "accent-graphic": "a mark that cannot be seen is a mark that is not there",
+    "second": "a secondary accent that cannot be read is not a second voice",
+    "second-graphic": "a mark that cannot be seen is a mark that is not there",
+    "fault": "a failure that cannot be read is a failure that was never reported",
+    "line": "a divider that cannot be seen is a divider that is not there",
+    "line-strong": "an edge that carries structure has to carry it visibly",
+    "on-fill": "a label on a filled control is the control",
 }
 
-# Proven and failed must also stay apart from each other, not only from the
-# background. Colour never carries the state alone — the guide gives that job
-# to the glyph — but where both land in one list they must not collapse into a
-# single grey for the reader who cannot separate red from green, or for the
-# page that gets printed in black and white. A house floor, not a WCAG one —
-# and it cuts both ways: it is what stops the accent from being darkened past
-# the point where proven and failed meet.
-STATUS_MIN = 1.5
+# Text tones are measured against the worst surface they can land on, never
+# against the page alone. Measuring against the page is how a palette passes
+# review and fails an audit: the previous one cleared 5.75:1 on the page and
+# 2.98:1 on the surface inline code brought with it.
+TEXT_ROLES = {"fg": "fg", "muted": "muted", "subtle": "subtle"}
+STATE_ROLES = {"accent": "accent", "accent-graphic": "graphic",
+               "second": "state", "second-graphic": "graphic", "fault": "state"}
+LINE_ROLES = {"line": "line", "line-strong": "line_strong"}
 
-def check_semantics():
-    for theme, roles in SEMANTIC.items():
-        for role, name in roles.items():
-            if name not in COLORS:
-                raise SystemExit(f"{theme}/{role}: unknown colour '{name}'")
-        for role, name in roles.items():
-            if role == "bg":
-                continue
-            if role not in FLOORS:
-                raise SystemExit(f"{theme}/{role}: no contrast floor declared for this role")
-            ratio, floor = contrast(name, roles["bg"]), FLOORS[role]
-            print(f"  {theme:5s} {role:6s} {name:12s} on {roles['bg']:5s} = {ratio:5.2f}:1  (floor {floor:g})")
-            if ratio < floor:
-                raise SystemExit(
-                    f"{theme}: {role} '{name}' on '{roles['bg']}' is {ratio:.2f}:1, "
-                    f"below the {floor:g}:1 floor — {REASONS[role]}"
-                )
-        apart = contrast(roles["fault"], roles["accent"])
-        print(f"  {theme:5s} {'fault vs accent':29s}= {apart:5.2f}:1  (floor {STATUS_MIN:g})")
-        if apart < STATUS_MIN:
-            raise SystemExit(
-                f"{theme}: fault '{roles['fault']}' and accent '{roles['accent']}' are "
-                f"only {apart:.2f}:1 apart, below the {STATUS_MIN:g}:1 floor — proven and "
-                f"failed would read as one colour in grayscale"
-            )
+
+def check(theme_name):
+    t = THEMES[theme_name]
+    fails = []
+
+    def measure(label, a, b, floor, reason_key):
+        ratio = contrast(a, b)
+        print(f"  {theme_name:5s} {label:34s} = {ratio:5.2f}:1  (floor {floor:g})")
+        if ratio < floor:
+            fails.append(f"{theme_name}: {label} is {ratio:.2f}:1, below {floor:g}:1 — {REASONS[reason_key]}")
+
+    # Body text has to hold on every surface the palette declares, not only the
+    # one it was derived against.
+    for surface in ("bg", "surface", "raised", "code-bg"):
+        measure(f"fg on {surface}", t["fg"], t[surface], FLOOR["fg"], "fg")
+    for role, key in TEXT_ROLES.items():
+        if role == "fg":
+            continue
+        measure(f"{role} on worst surface", t[role], t["_worst_text"], FLOOR[key], role)
+    for role, key in STATE_ROLES.items():
+        measure(f"{role} on worst surface", t[role], t["_worst_state"], FLOOR[key], role)
+    for role, key in LINE_ROLES.items():
+        measure(f"{role} on bg", t[role], t["bg"], FLOOR[key], role)
+    for side in ("accent", "second"):
+        measure(f"{side}-fg on {side}-fill", t[f"{side}-fg"], t[f"{side}-fill"], FLOOR["on_fill"], "on-fill")
+
+    apart = contrast(t["fault"], t["accent"])
+    print(f"  {theme_name:5s} {'fault vs accent (lightness)':34s} = {apart:5.2f}:1  (floor {FLOOR['separation']:g})")
+    if apart < FLOOR["separation"]:
+        fails.append(
+            f"{theme_name}: fault and accent are only {apart:.2f}:1 apart — proven and failed "
+            f"would read as one colour in grayscale"
+        )
+    return fails
+
+
+def check_hues():
+    """Two colours in one hue family stop being two colours, whatever their
+    lightness measures. Red is the fixed anchor: a failed restore is red, so the
+    accent and the secondary are the ones that have to stand clear of it."""
+    fault_h = hex_to_oklch(FAULT["light"])[2]
+    pairs = [
+        ("accent vs fault", ACCENT["H"], fault_h),
+        ("second vs fault", SECOND["H"], fault_h),
+        ("second vs accent", SECOND["H"], ACCENT["H"]),
+    ]
+    fails = []
+    for label, a, b in pairs:
+        d = hue_distance(a, b)
+        print(f"  hue   {label:34s} = {d:5.1f}°   (floor {FLOOR['hue_separation']:g}°)")
+        if d < FLOOR["hue_separation"]:
+            fails.append(f"{label} is {d:.1f}° apart, below {FLOOR['hue_separation']:g}° — "
+                         f"the two would read as one colour family")
+    return fails
+
+
+def by_hex():
+    """Named colours indexed by value, so a semantic role that happens to be one
+    of them emits the reference rather than a second copy of the number."""
+    return {c["hex"]: name for name, c in COLORS.items()}
+
 
 def semantic_block(theme, indent):
     pad = " " * indent
-    return [f"{pad}/* semantic ({theme}) */"] + [
-        f"{pad}--probavi-{role}: var(--probavi-{name});"
-        for role, name in SEMANTIC[theme].items()
-    ]
+    names = by_hex()
+    out = [f"{pad}/* semantic ({theme}) */"]
+    for role in ROLES:
+        hexv = THEMES[theme][role]
+        value = f"var(--probavi-{names[hexv]})" if hexv in names else hexv
+        out.append(f"{pad}--probavi-{role}: {value};")
+    return out
+
 
 def main():
     tokens = {
         "color": COLORS,
+        "theme": {t: {r: THEMES[t][r] for r in ROLES} for t in THEMES},
         "typography": TYPOGRAPHY,
         "geometry": GEOMETRY,
     }
@@ -148,7 +193,10 @@ def main():
 
     print("Generated tokens/tokens.json and tokens/tokens.css")
 
+
 if __name__ == "__main__":
     os.makedirs(f"{ROOT}/tokens", exist_ok=True)
-    check_semantics()
+    problems = check("light") + check("dark") + check_hues()
+    if problems:
+        raise SystemExit("\n".join(problems))
     main()

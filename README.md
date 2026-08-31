@@ -32,15 +32,29 @@ Start with **[BRAND_GUIDE.md](BRAND_GUIDE.md)** — it explains the mark, the pa
 ```css
 @import "tokens/tokens.css";
 
-.button { background: var(--probavi-accent); color: var(--probavi-paper); }
+.page   { background: var(--probavi-bg); color: var(--probavi-fg); }
+.note   { color: var(--probavi-muted); border-top: 1px solid var(--probavi-line); }
+.button { background: var(--probavi-accent-fill); color: var(--probavi-accent-fg); }
+.seal   { stroke: var(--probavi-accent-graphic); }
 .drill--failed { color: var(--probavi-fault); }
 ```
 
-Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-border` to Border sand on Paper and Border slate on Ink, as the guide requires. `--probavi-fault` is the failed-verification color the product needs and the brand assets never use — Fault red on Paper, Fault rose on Ink. Pair it with a glyph rather than relying on the color alone; the guide says why. Every semantic role is measured at generation time and clears its WCAG floor in both themes — 4.5:1 for what is read as text (foreground, accent, fault), 3:1 for hairlines — so anything built from these tokens stays legible either way. The generator prints the numbers on each run and refuses to emit tokens that fall below them.
+**Reach for the semantic roles, not the named colours.** There are twenty-two of them per theme —
+surfaces (`bg`, `surface`, `raised`, `code-bg`), text tones (`fg`, `muted`, `subtle`), hairlines
+(`line`, `line-strong`, `line-soft`), both accents in five strengths each, and the fault pair. The
+set is deliberately complete: a consumer that derives its own surface or grey by mixing two brand
+colours together is rebuilding the exact defect this palette was rebuilt to remove.
+
+The accent ships in two strengths, and which one you want depends on whether it is read or drawn.
+`--probavi-accent` clears 4.5:1 and is for text; `--probavi-accent-graphic` clears 3:1 and keeps
+more of the colour, for the mark, a rule or a diagram stroke. `--probavi-accent-fill` is the
+filled-control background, and `--probavi-accent-fg` is the only label colour measured against it.
+
+Light/dark switching is built in, and answers to two signals. By default the tokens follow the OS via `prefers-color-scheme`. If the page sets `data-theme="dark"` or `data-theme="light"` on `<html>` — as Starlight's theme toggle does — that wins over the OS preference in both directions, so a visitor on a light OS who switches the site to dark gets the dark values, and the reverse. Either way `--probavi-accent-graphic` resolves to Evidence green on light backgrounds and Mint on dark ones, and `--probavi-line` to Border paper on Paper and Border ink on Ink, as the guide requires. `--probavi-fault` is the failed-verification color the product needs and the brand assets never use — Fault red on Paper, Fault rose on Ink. Pair it with a glyph rather than relying on the color alone; the guide says why. Every semantic role is measured at generation time and clears its WCAG floor in both themes — 4.5:1 for what is read as text, 3:1 for what is drawn, 7:1 for body text — so anything built from these tokens stays legible either way. The generator prints all thirty-five measurements on each run and refuses to emit tokens that fall below them.
 
 ## Regenerating
 
-Everything derives from one source of truth — colours and geometry are declared once in `tools/`, so a change propagates to every size and variant consistently.
+Everything derives from one source of truth — colours and geometry are declared once in `tools/`, so a change propagates to every size and variant consistently. The palette is not a list of hexes: `tools/_palette.py` declares the vector it rests on (two grounds, two accent hues, one neutral hue) and the floors every tone must clear, and `tools/_oklch.py` holds the arithmetic that turns one into the other.
 
 ```bash
 pip install -r requirements.txt
