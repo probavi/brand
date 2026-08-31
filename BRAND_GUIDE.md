@@ -1,6 +1,6 @@
 # Probavi brand guide
 
-Version 1.5 · 2026-08-23
+Version 2.0 · 2026-08-31
 
 Probavi is Latin for **"I have proven."** Everything in this identity serves that sentence: the mark is a seal, not a mascot; the palette says trust, not hype; the checkmark is a certificate, not a to-do item.
 
@@ -41,26 +41,74 @@ The icon is a **seal**: a dashed ring enclosing a checkmark.
 
 ## 2. Color
 
-| Name | Hex | RGB | Role |
-|---|---|---|---|
-| Ink | `#1E2A4A` | 30 42 74 | Primary. Text, ring, dark surfaces. Trust and gravity. |
-| Evidence green | `#0B7B55` | 11 123 85 | The check, success states, "proven". Accent only — never large surfaces. |
-| Mint | `#4ADE9D` | 74 222 157 | The check on dark surfaces (Ink backgrounds), success text in dark UI. |
-| Fault red | `#9F0E1A` | 159 14 26 | Failed verification on Paper. Product UI only — never in a brand asset. |
-| Fault rose | `#EE7781` | 238 119 129 | Failed verification on Ink (dark UI). Product UI only. |
-| Paper | `#F5F0E8` | 245 240 232 | Light background, light elements on Ink. |
-| Border sand | `#8E8A81` | 142 138 129 | Hairlines on Paper (badge borders, dividers). |
-| Border slate | `#6E7CA6` | 110 124 166 | Hairlines on Ink (dark-surface dividers, card edges, table rules). |
+| Name | Hex | Role |
+|---|---|---|
+| Ink | `#050709` | Dark ground. Dark surfaces; on them the ring is drawn from Paper. |
+| Paper | `#FCFDFE` | Light ground; light elements on Ink. |
+| Evidence green | `#00856E` | The check on Paper, success, "proven". Accent only — never large surfaces. |
+| Mint | `#4AD1B3` | The check on Ink; success in dark UI. |
+| Iris | `#7D5EAF` | Secondary accent on Paper. Product UI only — never in a brand asset. |
+| Lilac | `#C4A5FB` | Secondary accent on Ink. Product UI only. |
+| Fault red | `#9F0E1A` | Failed verification on Paper. Product UI only. |
+| Fault rose | `#EE7781` | Failed verification on Ink. Product UI only. |
+| Border paper | `#8A949F` | Hairlines on Paper. |
+| Border ink | `#525D69` | Hairlines on Ink. |
 
-**Evidence green is measured too.** It reads as text on Paper at **4.65:1**, and holds white text on top of itself at 5.28:1 — the shield badge's label sits on exactly that field. It did not always: the green shipped at 2.98:1, under even the 3:1 floor for non-text, which left the success state the one state in the palette nobody could reliably read. The fix was the color, not an exception for it — same hue, same saturation, value lowered until it cleared the floor. It cannot keep going darker either: below 1.5:1 from Fault red, proven and failed stop being two states in grayscale. The green now sits in the band those two floors leave open, and `tools/gen_tokens.py` holds it there. Mint, its counterpart on Ink, already cleared the floor at 8.23:1 and did not move.
+**The palette is derived, not picked.** What `tools/_palette.py` declares is a vector: two
+grounds, two accent hues, one neutral hue, and the contrast floors every tone has to clear. The
+table above is the output. Change a hue and rerun, and the whole system moves together — a colour
+cannot be nudged by hand into a value that fails a floor, because no colour here is written by
+hand.
 
-Both hairlines are their background's own hue, pushed until it separates: Border slate is Ink desaturated and lightened, Border sand is Paper darkened. Both are measured, and both clear the 3:1 floor for non-text that carries structure — **Border sand 3.03:1 against Paper, Border slate 3.43:1 against Ink**. Hairlines are structure, not decoration: a divider that cannot be seen is a divider that is not there, and that holds in daylight as much as in the dark. The floor is not left to prose — `tools/gen_tokens.py` measures it on each run, as it does every role in the table, and refuses to emit tokens that fall below.
+**The neutral scale takes the ground's own hue.** Every grey, hairline and text tone in a theme is
+built from the hue that theme's background already has. This is the correction that matters most.
+The previous palette named only eight colours, so every consumer invented the rest by mixing the
+two grounds into each other — a blue-purple navy and a yellow cream, nine steps of it — and the
+result was the muddy, slightly bruised grey that made finished pages read as drab rather than
+calm. The scale is now complete and shipped: twenty-two semantic roles per theme in
+`tokens/tokens.css`. **A consumer that mixes its own is rebuilding the defect.**
 
-Rules: one accent, used sparingly — the check carries the green; UI should not compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are Border slate, never Ink itself and never the accent.
+**The accent has two strengths, and they are found two different ways.** Text takes the least
+extreme tone that clears 4.5:1 — the right rule for text, which should not be darker than it needs
+to be. A drawn element — the check, the ring, a rule, a diagram stroke — only has to clear 3:1, and
+takes the colour that was chosen, moving only if that colour would fail. The distinction is not
+academic: "least extreme" means *closest to the background*, so applying the text rule to a mark
+drew a seal on Ink at 3.48:1, fainter than the link text beside it. Use `--probavi-accent` where it
+is read and `--probavi-accent-graphic` where it is drawn.
 
-**The fault pair.** Red is reserved exclusively for failed-verification states in the product, and never appears in a brand asset — no mark, badge, or export in this package contains it, and the generators are not even given a constant for it. It is declared here so the product does not have to invent one: `--probavi-fault` resolves to **Fault red, 7.25:1 against Paper**, and on dark surfaces to **Fault rose, 5.11:1 against Ink**. Both clear the 4.5:1 floor for text, because a failed drill is read, not merely noticed. Fault red carries Evidence green's saturation, rotated to red and then measured like everything else here; Mint's construction could not be mirrored the same way — red is the darkest hue on the wheel, and the naive mirror lands at 3.51:1 on Ink — so the dark counterpart is measured to the floor instead of derived.
+**Every ratio here is measured, and the generator refuses to emit below the floor.** WCAG 2.1's
+numbers where WCAG has one: 4.5:1 for anything read as text, 3:1 for non-text that carries
+structure. Body text is held to AAA, 7:1, because it is what every page is made of. The floors are
+not left to prose — `tools/gen_tokens.py` measures all thirty-five of them on every run and prints
+each one. Every defect this package has shipped fails that table: a dark hairline that resolved to
+its own background at 1.00:1, a light one left at 1.33:1 when the dark side was fixed, and a green
+at 2.98:1 on Paper, unreadable as the success state it names.
 
-**Never let color carry the state alone.** Proven and failed differ first by glyph — the brand check against a cross, drawn at the same stroke weight and with the same round caps — and only then by color. Around one man in twelve cannot separate red from green, and for that reader the glyph is the whole message. The two colors are held apart in lightness as well (1.56:1 in light, 1.61:1 on Ink) so a status list survives grayscale, and `tools/gen_tokens.py` enforces that separation alongside both 4.5:1 floors on every run.
+**Red is the fixed anchor.** A failed restore is red; every other hue works around it, and the
+generator measures that it does. Two colours in one hue family stop being two colours, whatever
+their lightness measures — so the accent stands 149.6° from Fault red and the secondary 85.4°, both
+well past the 40° floor. This is the check the previous palette had no way to state, and it is why
+the secondary accent is a violet and not another warm: an amber sits about 30° from Fault red, close
+enough that a status list would ask the reader to tell two warms apart.
+
+**Never let colour carry the state alone.** Proven and failed differ first by glyph — the brand
+check against a cross, drawn at the same stroke weight and with the same round caps — and only then
+by colour. Around one man in twelve cannot separate red from green, and for that reader the glyph
+is the whole message. The two are also held apart in lightness (1.52:1 on Paper, 1.51:1 on Ink) so
+a status list survives grayscale, and `gen_tokens.py` enforces that separation alongside the
+contrast floors. That floor cuts both ways: it is also what stops the accent being darkened past
+the point where proven and failed meet.
+
+**The secondary accent is declared, not assigned.** Iris and Lilac exist so the product does not
+have to invent a second voice — for a diagram's other axis, a code string, a tab indicator, an
+editorial highlight. They carry no state in this package. Whether the product gives one of them a
+state is a product decision, and not this repository's to take.
+
+Rules: one accent carries the proof, used sparingly — the check owns the green, and UI should not
+compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are
+Border ink, never Ink itself and never the accent. Neither fault colour nor either secondary ever
+appears in a brand asset — no mark, badge or export in this package contains one, and the
+generators are not given a constant for them.
 
 ## 3. Typography
 
@@ -83,7 +131,8 @@ Rules: one accent, used sparingly — the check carries the green; UI should not
 - **Masters are the SVGs** (`svg/`), hand-editable text: geometry lives in a handful of `stroke-dasharray`, `path`, and `text` attributes. PNGs are exports — never edit them directly; re-export instead.
 - The lockup ships in two forms. The **live-text masters** (`logo.svg`, `logo-mono.svg`, `logo-mint.svg`, `logo-white.svg`) use `<text>` with font-family Inter — these are the editable source. The **outlined distribution copies** (`logo-outlined.svg`, `logo-mono-outlined.svg`, `logo-mint-outlined.svg`, `logo-white-outlined.svg`) have the wordmark converted to vector paths, so they render pixel-identically everywhere, with or without Inter installed. **Rule: send outlined copies to third parties (printers, partners, press kits); edit only the live-text masters, then regenerate the outlined copies** (`tools/gen_outlined.py`).
 - Everything regenerates from one script (`tools/gen_brand.py` in this package): colors, geometry, and layout are defined once; change a constant, rerun, and every size and variant stays consistent.
-- Design tokens (`tokens/tokens.json`, `tokens/tokens.css`) are generated from the same source by `tools/gen_tokens.py` — consume these in the website and dashboard rather than hardcoding hex values.
+- Design tokens (`tokens/tokens.json`, `tokens/tokens.css`) are generated from the same source by `tools/gen_tokens.py` — consume these in the website and dashboard rather than hardcoding hex values, and consume the **semantic roles** rather than the named colours: a surface, a text tone or a hairline that a consumer derives for itself is a colour the brand can no longer move.
+- The palette itself is derived. `tools/_palette.py` holds the vector and the floors; `tools/_oklch.py` holds the arithmetic — OKLab conversion, WCAG contrast, and the search that finds the lightness which just clears a given floor at a given hue.
 - Standard exports included: icon PNGs at 16–1024 px, lockup at heights 64/128/256, `favicon.ico` (16+32+48), badges at 1×/2× and heights 32/48/64.
 
 ## 6. Voice (one paragraph, for completeness)

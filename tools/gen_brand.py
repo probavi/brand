@@ -3,7 +3,7 @@
 import os, math, cairosvg
 from PIL import Image, ImageDraw, ImageFont
 from _fonts import inter
-from _palette import INK, GREEN, MINT, PAPER, BORDER_SAND, WHITE
+from _palette import INK, GREEN, MINT, PAPER, BORDER_PAPER, WHITE
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 F_MED = inter("Medium"); F_REG = inter("Regular")
@@ -158,7 +158,7 @@ def web_badge_svg(bg, text_c, ring_c, check_c, border):
   </g>
   <text x="64" y="40" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="24" fill="{text_c}">{BT}</text>
 </svg>'''
-wb = {"badge-web-light": web_badge_svg(PAPER, INK, INK, GREEN, BORDER_SAND),
+wb = {"badge-web-light": web_badge_svg(PAPER, INK, INK, GREEN, BORDER_PAPER),
       "badge-web-dark":  web_badge_svg(INK, PAPER, PAPER, MINT, INK)}
 for n,s in wb.items(): open(f"{ROOT}/svg/badge/{n}.svg","w").write(s)
 
@@ -172,7 +172,7 @@ def render_web_badge(name, bg, text_c, ring_c, check_c, border, height):
     w = int(BW*height/64)
     img.resize((w,height), Image.LANCZOS).save(f"{ROOT}/png/badge/{name}-h{height}.png")
 for h in [32,48,64]:
-    render_web_badge("badge-web-light", PAPER, INK, INK, GREEN, BORDER_SAND, h)
+    render_web_badge("badge-web-light", PAPER, INK, INK, GREEN, BORDER_PAPER, h)
     render_web_badge("badge-web-dark",  INK, PAPER, PAPER, MINT, INK, h)
 
 print("Done. Generated:")
