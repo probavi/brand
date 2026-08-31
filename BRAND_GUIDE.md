@@ -99,10 +99,19 @@ a status list survives grayscale, and `gen_tokens.py` enforces that separation a
 contrast floors. That floor cuts both ways: it is also what stops the accent being darkened past
 the point where proven and failed meet.
 
-**The secondary accent is declared, not assigned.** Iris and Lilac exist so the product does not
-have to invent a second voice — for a diagram's other axis, a code string, a tab indicator, an
-editorial highlight. They carry no state in this package. Whether the product gives one of them a
-state is a product decision, and not this repository's to take.
+**A drill has two verdicts, and only a verdict takes a state colour.** Proven takes Evidence green
+on Paper and Mint on Ink; failed takes the fault pair. An outcome that reached no verdict — an
+error, a cancellation — takes the neutral text roles, because on an outcome surface colour *is* the
+verdict channel, and there was no verdict to draw. It never takes the fault pair, which would claim
+a verdict the drill did not reach. Failed and errored are never conflated in either direction: the
+distinction is carried by glyph and wording, the same channel-first rule that separates proven from
+failed.
+
+**The secondary accent carries no state, here or anywhere.** Iris and Lilac exist so the product
+does not have to invent a second voice — a diagram's other axis, a code string, a tab indicator, an
+editorial highlight. They are never a status colour, in this package or in a consumer. A surface
+that believes it needs a third state colour stops and asks: that is a brand change and a product
+decision together, never a stylesheet edit.
 
 Rules: one accent carries the proof, used sparingly — the check owns the green, and UI should not
 compete with it. On Ink, always pair Paper (structure) with Mint (proof); hairlines on Ink are
